@@ -7,11 +7,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"strings"
 
+	"github.com/TreyBastian/colourize"
 	"github.com/olekukonko/tablewriter"
 )
 
 type Doc struct {
+	Search string
 	// 	SectionList []SectionList `xml:"sectionlist"`
 	// }
 	// type SectionList struct {
@@ -32,7 +35,7 @@ type Side struct {
 	Word string `xml:"words>word"`
 }
 
-func ProcessQueryXml(input io.Reader) (*Doc, error) {
+func ProcessQueryXml(search string, input io.Reader) (*Doc, error) {
 	b, err := ioutil.ReadAll(input)
 	if err != nil {
 		return nil, fmt.Errorf("read resp body error: %s", err)
@@ -40,6 +43,7 @@ func ProcessQueryXml(input io.Reader) (*Doc, error) {
 
 	var d Doc
 	xml.Unmarshal(b, &d)
+	d.Search = search
 
 	return &d, nil
 }
@@ -65,5 +69,7 @@ func (d Doc) String() string {
 	if err != nil {
 		return ""
 	}
-	return string(b)
+	fmt.Println(strings.Title(d.Search))
+	str := strings.Replace(string(b), strings.Title(d.Search), colourize.Colourize(strings.Title(d.Search), colourize.Bold), -1)
+	return strings.Replace(str, d.Search, colourize.Colourize(d.Search, colourize.Bold), -1)
 }

@@ -29,5 +29,5 @@ func search(args []string) (*Doc, error) {
 	}
 	defer resp.Body.Close()
 
-	return ProcessQueryXml(resp.Body)
+	return ProcessQueryXml(args[1], resp.Body)
 }
