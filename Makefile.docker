@@ -1,0 +1,10 @@
+all:
+	@docker build -t dict-go-build -f Dockerfile.build .
+	@docker run \
+		--volume $(PWD):/data:rw \
+		--env CGO_ENABLED=0 --env GOOS=linux \
+		--interactive --tty --rm \
+		dict-go-build \
+		go build -a -installsuffix cgo -o /data/dlo .
+	@docker rmi dict-go-build
+	@docker build -t dlo-app -f Dockerfile.run .
