@@ -8,14 +8,17 @@ import (
 
 func TestDict(t *testing.T) {
 	cases := []struct {
+		search string
 		input  string
 		expect Doc
 	}{
 		{
+			search: "",
 			input:  "",
 			expect: Doc{},
 		},
 		{
+			search: "short",
 			input: `<?xml version="1.0" encoding="UTF-8"?>
 <xml leorendertarget="1" dictQueryXSLT="0" lion="0" api="" lp="ende" lang="de">
     <advMedia url="/advMedia/ende-74b6fc66.xml"/>
@@ -37,6 +40,7 @@ func TestDict(t *testing.T) {
     </sectionlist>
 </xml>`,
 			expect: Doc{
+				Search: "short",
 				Sections: []Section{
 					{
 						SectionName: "adjadv",
@@ -60,12 +64,12 @@ func TestDict(t *testing.T) {
 	}
 
 	for _, test := range cases {
-		got, err := ProcessQueryXml(bytes.NewBufferString(test.input))
+		got, err := ProcessQueryXml(test.search, bytes.NewBufferString(test.input))
 		if err != nil {
 			t.Fatalf("ProcessQueryXml failed for input: %s", test.input)
 		}
-		if !reflect.DeepEqual(got, test.expect) {
-			t.Fatalf("Expected: %s, got: %s", test.expect, got)
+		if !reflect.DeepEqual(*got, test.expect) {
+			t.Fatalf("Expected: %#v, got: %#v", test.expect, *got)
 		}
 	}
 }
