@@ -43,10 +43,8 @@ func ProcessQueryXml(search string, input io.Reader) (*Doc, error) {
 	}
 
 	var d Doc
-	if len(b) > 0 {
-		if err := xml.Unmarshal(b, &d); err != nil {
-			return nil, fmt.Errorf("xml unmarshal error: %s", err)
-		}
+	if err := xml.Unmarshal(b, &d); err != nil {
+		return nil, fmt.Errorf("xml unmarshal error: %s", err)
 	}
 	d.Search = search
 
