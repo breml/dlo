@@ -128,7 +128,7 @@ Modify the `lp` parameter in the API URL construction.
 ### Debugging
 
 To see raw XML response:
-1. Print `resp` body before parsing in `main.go:27`
+1. Print `resp` body before parsing in the `main()` function
 2. Check `dict.leo.org.md` for API documentation
 3. Test XML parsing with `dict_test.go` samples
 
