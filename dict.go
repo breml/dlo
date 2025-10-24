@@ -6,11 +6,12 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 
 	"github.com/TreyBastian/colourize"
 	"github.com/olekukonko/tablewriter"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type Doc struct {
@@ -36,13 +37,17 @@ type Side struct {
 }
 
 func ProcessQueryXml(search string, input io.Reader) (*Doc, error) {
-	b, err := ioutil.ReadAll(input)
+	b, err := io.ReadAll(input)
 	if err != nil {
 		return nil, fmt.Errorf("read resp body error: %s", err)
 	}
 
 	var d Doc
-	xml.Unmarshal(b, &d)
+	if len(b) > 0 {
+		if err := xml.Unmarshal(b, &d); err != nil {
+			return nil, fmt.Errorf("xml unmarshal error: %s", err)
+		}
+	}
 	d.Search = search
 
 	return &d, nil
@@ -61,15 +66,21 @@ func (d Doc) String() string {
 		for _, v := range s.Entries {
 			table.Append([]string{v.Sides[0].Word, v.Sides[1].Word})
 		}
-		fmt.Fprintln(w, s.SectionName)
+		if _, err := fmt.Fprintln(w, s.SectionName); err != nil {
+			return ""
+		}
 		table.Render()
 	}
-	w.Flush()
-	b, err := ioutil.ReadAll(r)
+	if err := w.Flush(); err != nil {
+		return ""
+	}
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return ""
 	}
-	fmt.Println(strings.Title(d.Search))
-	str := strings.Replace(string(b), strings.Title(d.Search), colourize.Colourize(strings.Title(d.Search), colourize.Bold), -1)
-	return strings.Replace(str, d.Search, colourize.Colourize(d.Search, colourize.Bold), -1)
+	caser := cases.Title(language.English)
+	titleSearch := caser.String(d.Search)
+	fmt.Println(titleSearch)
+	str := strings.ReplaceAll(string(b), titleSearch, colourize.Colourize(titleSearch, colourize.Bold))
+	return strings.ReplaceAll(str, d.Search, colourize.Colourize(d.Search, colourize.Bold))
 }
