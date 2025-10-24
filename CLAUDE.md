@@ -115,16 +115,6 @@ Current code uses `panic()` for errors. Consider:
 - Adding user-friendly error messages
 - Handling network failures gracefully
 
-### Supporting Other Languages
-
-The API supports multiple language pairs (see dict.leo.org.md):
-- `ende` - English-German (current)
-- `enfr` - English-French
-- `enes` - English-Spanish
-- etc.
-
-Modify the `lp` parameter in the API URL construction.
-
 ### Debugging
 
 To see raw XML response:
@@ -146,15 +136,6 @@ To see raw XML response:
 - Uses ANSI color codes via `colourize` package
 - Table rendering requires monospace font
 - May not render correctly in all terminals
-
-### Future Enhancement Ideas (from README.md)
-
-- More sophisticated CLI interface
-- Configuration file support
-- Additional language pair support
-- Improved output formatting options
-- Caching for offline lookups
-- History/favorites functionality
 
 ## Testing Strategy
 
@@ -210,7 +191,7 @@ gofmt -w .
 
 - Author: Lucas Bremgartner
 - Repository: github.com/breml/dlo
-- No active issue tracker mentioned
+- GitHub issue tracker available for bug reports and feature requests
 - Consider checking README for contribution guidelines
 
 ---
