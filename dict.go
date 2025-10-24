@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 
 	"github.com/TreyBastian/colourize"
@@ -43,8 +44,11 @@ func ProcessQueryXml(search string, input io.Reader) (*Doc, error) {
 	}
 
 	var d Doc
-	if err := xml.Unmarshal(b, &d); err != nil {
-		return nil, fmt.Errorf("xml unmarshal error: %s", err)
+	// Handle empty input gracefully (xml.Unmarshal returns EOF for empty input)
+	if len(b) > 0 {
+		if err := xml.Unmarshal(b, &d); err != nil {
+			return nil, fmt.Errorf("xml unmarshal error: %s", err)
+		}
 	}
 	d.Search = search
 
@@ -65,15 +69,18 @@ func (d Doc) String() string {
 			table.Append([]string{v.Sides[0].Word, v.Sides[1].Word})
 		}
 		if _, err := fmt.Fprintln(w, s.SectionName); err != nil {
+			log.Printf("failed to write section name: %s", err)
 			return ""
 		}
 		table.Render()
 	}
 	if err := w.Flush(); err != nil {
+		log.Printf("failed to flush buffer: %s", err)
 		return ""
 	}
 	b, err := io.ReadAll(r)
 	if err != nil {
+		log.Printf("failed to read buffer: %s", err)
 		return ""
 	}
 	caser := cases.Title(language.English)
