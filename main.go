@@ -17,7 +17,7 @@ func main() {
 
 func search(args []string) (*Doc, error) {
 	if len(args) < 2 {
-		return nil, fmt.Errorf("Minimum 1 arg required")
+		return nil, fmt.Errorf("minimum 1 arg required")
 	}
 
 	// Arguments
@@ -27,7 +27,11 @@ func search(args []string) (*Doc, error) {
 	if err != nil {
 		log.Fatalf("http get error: %s", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Printf("failed to close response body: %s", err)
+		}
+	}()
 
 	return ProcessQueryXml(args[1], resp.Body)
 }
